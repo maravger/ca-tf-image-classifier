@@ -4,6 +4,9 @@ import os
 
 img = sys.argv[1]
 
+# Just disables the warning, doesn't enable AVX/FMA
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
 # Read in the image_data
 image_data = tf.gfile.FastGFile(img, 'rb').read()
 
