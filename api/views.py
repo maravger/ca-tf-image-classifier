@@ -22,11 +22,29 @@ class FileUploadView(APIView):
     permission_classes= (AllowAny, )
 
     def post(self, request, filename, format='jpg'):
-        # url for test_data !! 
-        image_data = tf.gfile.FastGFile("/home/abdul/Documents/Dsgit/ca-tf-image-classifier/test_data/"+filename, 'rb').read()
+        
+        src_img = request.data['file']
+        dest_img = '/home/abdul/Documents/Dsgit/ca-tf-image-classifier/'+src_img.name
+        
+        with open(dest_img, 'wb+' ) as dest:
+            for c in src_img.chunks():
+                dest.write(c)
+        
+        lines = open(dest_img).readlines()
+        open(dest_img, 'wb+').writelines(lines[4:-1])
+
+        to_ocr = Image.open(dest_img)
+        image_data = tf.gfile.FastGFile(dest_img, 'rb').read()
+
+        if os.path.isfile(dest_img):
+            os.remove(dest_img)
+        else:
+            print("Error: temp file not found")
+              
 
         # Loads label file, strips off carriage return  
         label_lines = [line.rstrip() for line
+        #path file of retrained_labels
         in tf.gfile.GFile("/home/abdul/Documents/Dsgit/ca-tf-image-classifier/retrained_labels")]
 
         # Unpersists graph from file
@@ -38,7 +56,7 @@ class FileUploadView(APIView):
         # Feed the image_data as input to the graph and get first prediction
         with tf.Session() as sess:
             softmax_tensor = sess.graph.get_tensor_by_name('final_result:0')
-            predictions = sess.run(softmax_tensor,{'DecodeJpeg/contents:0': image_data})
+            predictions = sess.run(softmax_tensor,{'DecodeJpeg/contents:0': image_data}) 
             # Sort to show labels of first prediction in order of confidence
             top_k = predictions[0].argsort()[-len(predictions[0]):][::-1]
             for node_id in top_k:
