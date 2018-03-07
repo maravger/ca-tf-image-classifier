@@ -22,7 +22,8 @@ class FileUploadView(APIView):
     permission_classes= (AllowAny, )
 
     def post(self, request, filename, format='jpg'):
-        
+       
+        temp_list = []
         src_img = request.data['file']
         dest_img = '/home/abdul/Documents/Dsgit/ca-tf-image-classifier/'+src_img.name
         
@@ -62,6 +63,14 @@ class FileUploadView(APIView):
             for node_id in top_k:
                 human_string = label_lines[node_id]
                 score = predictions[0][node_id]
-                return Response('%s (score = %.5f)' % (human_string, score))
+                temp_list.append([human_string, score])
+               
+            # If we want to print everything in the list we need to change the next line to   
+            return Response('%s (score = %.5f)' % (temp_list[0][0], temp_list[0][1]))
+
+
+
+
+
 
 
