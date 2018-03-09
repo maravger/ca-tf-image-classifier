@@ -1,4 +1,3 @@
-
 try:
         import Image
 except ImportError:
@@ -25,7 +24,9 @@ class FileUploadView(APIView):
        
         temp_list = []
         src_img = request.data['file']
-        dest_img = '/home/abdul/Documents/Dsgit/ca-tf-image-classifier/'+src_img.name
+        dir = os.getcwd()
+        filename = os.path.join(dir, '')
+        dest_img = filename+"/"+src_img.name
         
         with open(dest_img, 'wb+' ) as dest:
             for c in src_img.chunks():
@@ -46,10 +47,10 @@ class FileUploadView(APIView):
         # Loads label file, strips off carriage return  
         label_lines = [line.rstrip() for line
         #path file of retrained_labels
-        in tf.gfile.GFile("/home/abdul/Documents/Dsgit/ca-tf-image-classifier/retrained_labels")]
+        in tf.gfile.GFile(filename+"/retrained_labels")]
 
         # Unpersists graph from file
-        with tf.gfile.FastGFile("/home/abdul/Documents/Dsgit/ca-tf-image-classifier/retrained_graph.pb", 'rb') as f:
+        with tf.gfile.FastGFile(filename+"/retrained_graph.pb", 'rb') as f:
             graph_def = tf.GraphDef()
             graph_def.ParseFromString(f.read())
             _ = tf.import_graph_def(graph_def, name='')
