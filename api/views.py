@@ -24,13 +24,9 @@ class FileUploadView(APIView):
        
         temp_list = []
         src_img = request.data['file']
-<<<<<<< HEAD
         dir = os.getcwd()
         filename = os.path.join(dir, '')
         dest_img = filename+"/"+src_img.name
-=======
-        dest_img = '/home/dspath/ca-tf-image-classifier/'+src_img.name
->>>>>>> d72e7c8c9f2595192e05030d47d224aeb8269a34
         
         with open(dest_img, 'wb+' ) as dest:
             for c in src_img.chunks():
@@ -51,17 +47,12 @@ class FileUploadView(APIView):
         # Loads label file, strips off carriage return  
         label_lines = [line.rstrip() for line
         #path file of retrained_labels
-<<<<<<< HEAD
         in tf.gfile.GFile(filename+"/retrained_labels")]
 
         # Unpersists graph from file
         with tf.gfile.FastGFile(filename+"/retrained_graph.pb", 'rb') as f:
-=======
-        in tf.gfile.GFile("/home/dspath/ca-tf-image-classifier/retrained_labels")]
 
         # Unpersists graph from file
-        with tf.gfile.FastGFile("/home/dspath/ca-tf-image-classifier/retrained_graph.pb", 'rb') as f:
->>>>>>> d72e7c8c9f2595192e05030d47d224aeb8269a34
             graph_def = tf.GraphDef()
             graph_def.ParseFromString(f.read())
             _ = tf.import_graph_def(graph_def, name='')
