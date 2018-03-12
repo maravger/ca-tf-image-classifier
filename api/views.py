@@ -1,4 +1,3 @@
-
 try:
         import Image
 except ImportError:
@@ -25,7 +24,9 @@ class FileUploadView(APIView):
        
         temp_list = []
         src_img = request.data['file']
-        dest_img = '/home/dspath/ca-tf-image-classifier/'+src_img.name
+        dir = os.getcwd()
+        filename = os.path.join(dir, '')
+        dest_img = filename+"/"+src_img.name
         
         with open(dest_img, 'wb+' ) as dest:
             for c in src_img.chunks():
@@ -46,10 +47,12 @@ class FileUploadView(APIView):
         # Loads label file, strips off carriage return  
         label_lines = [line.rstrip() for line
         #path file of retrained_labels
-        in tf.gfile.GFile("/home/dspath/ca-tf-image-classifier/retrained_labels")]
+        in tf.gfile.GFile(filename+"/retrained_labels")]
 
         # Unpersists graph from file
-        with tf.gfile.FastGFile("/home/dspath/ca-tf-image-classifier/retrained_graph.pb", 'rb') as f:
+        with tf.gfile.FastGFile(filename+"/retrained_graph.pb", 'rb') as f:
+
+        # Unpersists graph from file
             graph_def = tf.GraphDef()
             graph_def.ParseFromString(f.read())
             _ = tf.import_graph_def(graph_def, name='')
@@ -60,13 +63,19 @@ class FileUploadView(APIView):
             predictions = sess.run(softmax_tensor,{'DecodeJpeg/contents:0': image_data}) 
             # Sort to show labels of first prediction in order of confidence
             top_k = predictions[0].argsort()[-len(predictions[0]):][::-1]
+        
             for node_id in top_k:
                 human_string = label_lines[node_id]
+                print ('%s' % human_string)
                 score = predictions[0][node_id]
-                temp_list.append([human_string, score])
+                if human_string in ['field fire']:
+                    #temp_list.append([human_string, score])
+                    temp_list.insert(0,[human_string, score])
+                if human_string in ['field']:
+                    temp_list.insert(1,[human_string, score])
                
             # If we want to print everything in the list we need to change the next line to   
-            return Response('%s (score = %.5f)' % (temp_list[0][0], temp_list[0][1]))
+            return Response(round(temp_list[0][1],5))
 
 
 

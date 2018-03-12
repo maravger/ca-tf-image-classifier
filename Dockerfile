@@ -1,14 +1,13 @@
 FROM python:2.7.13
 
-ADD . /home/dspath/ca-tf-image-classifier
-
-ADD ./requirements.txt /home/dspath/ca-tf-image-classifier
+ADD . ./
+ADD ./requirements.txt ./
 
 RUN apt-get update \
- && pip install -r /home/dspath/ca-tf-image-classifier/requirements.txt \
+ && pip install -r ./requirements.txt \
  && rm -rf /var/lib/apt/lists/*
 
-ADD . /home/dspath/ca-tf-image-classifier
+ADD . ./
 
-ENTRYPOINT [ "python", "-u", "/home/dspath/ca-tf-image-classifier/manage.py", "runserver", "0.0.0.0:8000"]
+ENTRYPOINT [ "python", "-u", "./manage.py", "runserver", "0.0.0.0:8000"]
 
