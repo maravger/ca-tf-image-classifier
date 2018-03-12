@@ -75,7 +75,7 @@ class FileUploadView(APIView):
                     temp_list.insert(1,[human_string, score])
                
             # If we want to print everything in the list we need to change the next line to   
-            return Response('%s (score = %.5f)' % (temp_list[0][0], temp_list[0][1]))
+            return Response(round(temp_list[0][1],5))
 
 
 
