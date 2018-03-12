@@ -63,10 +63,16 @@ class FileUploadView(APIView):
             predictions = sess.run(softmax_tensor,{'DecodeJpeg/contents:0': image_data}) 
             # Sort to show labels of first prediction in order of confidence
             top_k = predictions[0].argsort()[-len(predictions[0]):][::-1]
+        
             for node_id in top_k:
                 human_string = label_lines[node_id]
+                print ('%s' % human_string)
                 score = predictions[0][node_id]
-                temp_list.append([human_string, score])
+                if human_string in ['field fire']:
+                    #temp_list.append([human_string, score])
+                    temp_list.insert(0,[human_string, score])
+                if human_string in ['field']:
+                    temp_list.insert(1,[human_string, score])
                
             # If we want to print everything in the list we need to change the next line to   
             return Response('%s (score = %.5f)' % (temp_list[0][0], temp_list[0][1]))
