@@ -5,3 +5,4 @@ Django==1.11.10
 Image==1.5.19
 Pillow==5.0.0
 djangorestframework==3.7.7
+requests
