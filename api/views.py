@@ -160,10 +160,11 @@ class FileUploadView(APIView):
 	#print (duration)
 	# duration also count calculation time
 
-        return Response(self.posttoorion("edgy", size, duration, field, fire, GPSX, GPSY)) # Post to OCB      
+  ##################     # return Response(self.posttoorion("edgy", size, duration, field, fire, GPSX, GPSY)) # Post to OCB      
+        
         #print "postoorion"
         # If we want to print everything in the list we need to change the next line to   
-        #return Response(round(temp_list[0][1],5))
+        return Response(round(temp_list[0][1],5))
             # If we want to print everything in the list we need to change the next line to   
             #return Response(round(temp_list[0][1],5))
 
