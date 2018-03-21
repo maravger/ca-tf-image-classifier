@@ -2,7 +2,6 @@ try:
         import Image
 except ImportError:
         from PIL import Image
-#import pytesseract
 import datetime
 import os
 import sys
@@ -21,21 +20,15 @@ from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser
 from rest_framework.parsers import JSONParser
 
-
-
 GPSX = 38.3029
 GPSY = 23.7535
 
 class FileUploadView(APIView):
-    #parser_classes = (FileUploadParser, MultiPartParser, JSONParser  )
     parser_classes = (MultiPartParser, )
     permission_classes= (AllowAny, )
    
-
-
     def posttoorion(self, sensorid, size, duration, field_score, fire_score, gps1, gps2):
         pts = datetime.datetime.now().strftime('%s')
-
         url = 'http://193.190.127.181:1026/v2/entities'
         headers = {'Accept': 'application/json', 'X-Auth-Token': 'QGIrJsK6sSyKfvZvnsza6DlgjSUa8t'}
 
@@ -50,7 +43,7 @@ class FileUploadView(APIView):
                 "value": str(pts),
                 "type": "time"
             },
-	    "size": {
+	       "size": {
                 "value":size,
                 "type":"bytes"
             },
@@ -75,7 +68,6 @@ class FileUploadView(APIView):
                 "value": gps2,
                 "type": "gps"
             }
-
         }
 
         json_bytes = sys.getsizeof(json)
@@ -91,37 +83,28 @@ class FileUploadView(APIView):
 
     def post(self, request, filename, format='jpg'):
 
-	size = request.data['size']
-	start_time = request.data['start_time']
-	
-	temp_list = []
-
-
-	
+        size = request.data['size']
+        start_time = request.data['start_time']
+        temp_list = []
         src_img = request.data['file']
         dir = os.getcwd()
         filename = os.path.join(dir, '')
-        #dest_img = filename+"/"+src_img.name
         dest_img = filename+src_img.name
+        
         with open(dest_img, 'wb+' ) as dest:
             for c in src_img.chunks():
                 dest.write(c)
-        #MultiParser
-        #lines = open(dest_img).readlines()
-        #open(dest_img, 'wb+').writelines(lines[3:-1])
-	# if you want curl change 3 ->4 for right image
-        
-	image_data = tf.gfile.FastGFile(dest_img, 'rb').read()
+
+        image_data = tf.gfile.FastGFile(dest_img, 'rb').read()
 
         if os.path.isfile(dest_img):
             os.remove(dest_img)
         else:
-            print("Error: temp file not found")
-              
+            print("Error: temp file not found")      
 	
         # Loads label file, strips off carriage return  
         label_lines = [line.rstrip() for line
-        #path file of retrained_labels
+        # path file of retrained_labels
         in tf.gfile.GFile(filename+"/retrained_labels")]
 
         # Unpersists graph from file
@@ -141,7 +124,6 @@ class FileUploadView(APIView):
         
             for node_id in top_k:
                 human_string = label_lines[node_id]
-                #print ('%s' % human_string)
                 score = predictions[0][node_id]
                 if human_string in ['field fire']:
                     #temp_list.append([human_string, score])
@@ -149,24 +131,15 @@ class FileUploadView(APIView):
                 if human_string in ['field']:
                     temp_list.insert(1,[human_string, score])
                
-	  #Send data to OCB
+        # Send data to OCB
         fire = round(temp_list[0][1],5)
         field = 1-fire
-        print fire
-	#end_time = datetime.datetime.now().strftime('%f')
-	end_time = time.time()# * 1000
+        end_time = time.time()# * 1000
         duration = float(end_time) - float(start_time)
-	duration = round(duration,3)
-	#print (duration)
-	# duration also count calculation time
+        duration = round(duration,3)
+        # duration also includes calculation time
 
-  ##################     # return Response(self.posttoorion("edgy", size, duration, field, fire, GPSX, GPSY)) # Post to OCB      
-        
-        #print "postoorion"
-        # If we want to print everything in the list we need to change the next line to   
         return Response(round(temp_list[0][1],5))
-            # If we want to print everything in the list we need to change the next line to   
-            #return Response(round(temp_list[0][1],5))
 
 
 
