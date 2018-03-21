@@ -140,6 +140,8 @@ class FileUploadView(APIView):
         # duration also includes calculation time
 
         return Response(round(temp_list[0][1],5))
+        # Switch to this Response for OCB integration
+        #return Response(self.posttoorion("edgy", size, duration, field, fire, GPSX, GPSY)) # Post to OCB
 
 
 
