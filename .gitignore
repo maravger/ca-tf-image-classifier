@@ -1,0 +1,15 @@
+/tags
+.env
+.*.swp
+*.swp
+*.egg-info
+*.pot
+*.py[co]
+__pycache__
+.idea/
+/env
+*.sqlite3
+
+# ignore certificates for ssl
+*.crt
+*.key
