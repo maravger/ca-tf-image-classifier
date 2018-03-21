@@ -1,25 +1,44 @@
-# ca-tf-image-classifier
-1. docker build command:
-docker build -t filename .
+# Tensorflow-based Image Classification Service
 
+An image classification service, developed using Google’s Tensorflow deep learning framework, where the “Inception v3” Deep Neural Network was retrained in order to classify images of fields as “fire-containing” or not. This service is meant to be containerized and deployed on a Docker platform installed on Fog and or Cloud servers, or executed as a native standalone application at the Edge. Containers were selected instead of Virtual Machines, as a means of virtualization, because of their overall lower overhead, smaller footprint and lightweight vertical scalability. For the asynchronous communication of both the Edge and the Fog layer with Cloud, the NGSI mechanism (OCB) is leveraged.
 
-2. docker run command: 
-docker run -i -p 8000:8000 filename
+The model can be easily retrained to match 
 
+## OCB server side install
 
-3. Command for curl: 
+## Native execution
+Create virtual environment:
+```bash
+pip install --upgrade virtualenv 
+virtualenv --system-site-packages .
+source ./bin/activate
+```
 
-curl --interface YOURINTERFACE -s -X POST -F "file=@PATHTOYOURIMAGE.jpg;type=image/jpeg" http://127.0.0.1:8000/ca_tf/imageUpload/IMAGENAME.jpg
+Install required libraries and run:
+```bash
+pip install -r requirements.txt
+./classify.py IMAGE
+```
 
-for example:
-curl --interface enp7s0 -s -X POST -F "file=@/home/abdul/Documents/Dsgit/ca-tf-image-classifier/test_data/iphone.jpg;type=image/jpeg" http://127.0.0.1:8000/ca_tf/imageUpload/iphone.jpg
+## Docker install
+1. build:
+```bash
+docker build -t ca-tf .
+```
 
+2. run as a server:
+```bash
+docker run -i -p 8000:8000 ca-tf
+```
 
+3. Test using one of the predifined scenarios
+```bash
+cd client_scenarios/
+client_scenario_2.py
+```
 
-
-
-4. json_to_csv.py
-a. change path of .txt file you want to open. 
-b. output.json has our flattened json
-c. include the keys you want to include to your csv.
-d. module for epoch convertion timestamps  
+## Convert OCB json data to CSV
+In json_to_csv.py
+1. change path of .txt file you want to convert. 
+2. output.json contains your flattened json.
+3. include the keys you want to include to your csv. 
