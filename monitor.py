@@ -31,21 +31,4 @@ print(number)
 # Toggle between denying/accepting requests in container ports
 # subprocess.call([‘sudo’, sys.executable, ‘./ufw_cust.py’, ‘deny’, ‘8000’])
 
-'''
-#!/usr/bin/env python
-from api.tasks import *
-import docker
-
-def main():
-
-    number = add.delay(2,2)
-    print(number)
-
-
-
-
-
-if __name__ == "__main__":
-    main()
-'''
 
