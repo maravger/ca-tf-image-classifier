@@ -21,24 +21,24 @@ pip install -r requirements.txt
 ```
 
 ## Docker install
-1. build:
+1. Build:
 ```bash
 docker build -t ca-tf .
 ```
 
-2. run as a server:
+2. Run as a server:
 ```bash
 docker run -i -p 8000:8000 ca-tf
 ```
 
-3. Test using one of the predifined scenarios
+3. Test using one of the predifined scenarios:
 ```bash
 cd client_scenarios/
 client_scenario_2.py
 ```
 
 ## Convert OCB json data to CSV
-In json_to_csv.py
+In json_to_csv.py:
 1. change path of .txt file you want to convert. 
 2. output.json contains your flattened json.
 3. include the keys you want to include to your csv. 
