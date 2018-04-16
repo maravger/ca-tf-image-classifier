@@ -26,30 +26,38 @@ import urllib
 @permission_classes((AllowAny,))
 def GetLogs(request, format=None):
     try:
+        k=0
         with open('temp_response.txt', 'r') as outfile:
             for i, l in enumerate(outfile):
                 pass
+                k = i
+            if k == 0:
+                finished = 0
+            else :
+                finished = k + 1
         outfile.close()
+
     except IOError as e:
-        i = 0
+         finished = 0
+
     try:
         with open('temp_response.txt', 'r') as outfile:
             content = outfile.readlines()
         content = [x.strip() for x in content]
-        finished=i+1
+        sum = 0
 
-        sum=0
-        for i in range (1 , len(content)):
-            sum+= float(content[i])
+        for i in range(1, len(content)):
+            sum += float(content[i])
+
     except IOError as e:
-        sum= 0
-        finished=0
-    if sum==0:
-        average_response_time=0
-    else:
-        average_response_time=sum/i
-    average_response_time= round(average_response_time, 3)
+        sum = 0
 
+    if sum == 0:
+        average_response_time = 0
+    else:
+        average_response_time = sum/i
+
+    average_response_time = round(average_response_time, 3)
 
     try:
         with open('rules.txt', 'r') as outfile:
@@ -62,17 +70,26 @@ def GetLogs(request, format=None):
         submitted = 0
 
     try:
+        k = 0
         with open('rejected.txt', 'r') as outfile:
             for i, l in enumerate(outfile):
                 pass
-                rejected = i + 1
+                k=i
+            if k == 0:
+                rejected =0
+            else:
+                rejected = k + 1
+            outfile.close()
     except IOError as e:
-        rejected= 0
+        rejected = 0
 
-
-    print (submitted,finished,rejected)
+    print (submitted, finished, rejected)
     data = {"requests_submitted": submitted,"requests_finished":finished,"requests_rejected":rejected,"average_response_time": average_response_time}
     data_d = json.dumps(data)
     json_data = json.loads(data_d)
     print(json_data)
+
+    open('temp_response.txt', 'w').close()
+    open('rejected.txt', 'w').close()
+
     return Response(json_data)
