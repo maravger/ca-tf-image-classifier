@@ -25,37 +25,49 @@ import urllib
 @api_view(['GET'])
 @permission_classes((AllowAny,))
 def GetLogs(request, format=None):
+    try:
+        with open('temp_response.txt', 'r') as outfile:
+            for i, l in enumerate(outfile):
+                pass
+        outfile.close()
+    except IOError as e:
+        i = 0
+    try:
+        with open('temp_response.txt', 'r') as outfile:
+            content = outfile.readlines()
+        content = [x.strip() for x in content]
+        finished=i+1
 
-    with open('temp_response.txt', 'r') as outfile:
-        for i, l in enumerate(outfile):
-            pass
-    outfile.close()
-
-    with open('temp_response.txt', 'r') as outfile:
-        content = outfile.readlines()
-    content = [x.strip() for x in content]
-    finished=i+1
-
-    sum=0
-    for i in range (1 , len(content)):
-        sum+= float(content[i])
-
-    average_response_time=sum/i
+        sum=0
+        for i in range (1 , len(content)):
+            sum+= float(content[i])
+    except IOError as e:
+        sum= 0
+        finished=0
+    if sum==0:
+        average_response_time=0
+    else:
+        average_response_time=sum/i
     average_response_time= round(average_response_time, 3)
 
 
-    with open('rejected.txt', 'r') as outfile:
-        for i, l in enumerate(outfile):
-            pass
-    outfile.close()
-    rejected=i+1
+    try:
+        with open('rules.txt', 'r') as outfile:
+            content = outfile.readlines()
+        content = [x.strip() for x in content]
+        outfile.close()
+        b = content[1]
+        submitted = int(b)
+    except IOError as e:
+        submitted = 0
 
-    with open('rules.txt', 'r') as outfile:
-        content = outfile.readlines()
-    content = [x.strip() for x in content]
-    outfile.close()
-    b = content[1]
-    submitted = int(b)
+    try:
+        with open('rejected.txt', 'r') as outfile:
+            for i, l in enumerate(outfile):
+                pass
+                rejected = i + 1
+    except IOError as e:
+        rejected= 0
 
 
     print (submitted,finished,rejected)
