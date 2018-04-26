@@ -76,7 +76,7 @@ def GetLogs(request, format=None):
                 pass
                 k=i
             if k == 0:
-                rejected =0
+                rejected = 0
             else:
                 rejected = k + 1
             outfile.close()
