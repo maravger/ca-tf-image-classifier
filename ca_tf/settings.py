@@ -45,7 +45,11 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
+<<<<<<< HEAD
     #'django.middleware.csrf.CsrfViewMiddleware',
+=======
+    'django.middleware.csrf.CsrfViewMiddleware',
+>>>>>>> refs/remotes/origin/master
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -128,7 +132,11 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
     ],
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> refs/remotes/origin/master
     'DEFAULT_PARSER_CLASSES': (
             'rest_framework.parsers.JSONParser',
             'rest_framework.parsers.MultiPartParser',

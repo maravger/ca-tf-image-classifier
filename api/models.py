@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 from django.db import models
 
 # Create your models here.
+<<<<<<< HEAD
 from django.db import models
 
 
@@ -26,3 +27,5 @@ class RequestFinished(models.Model):
 class RequestToAccept(models.Model):
     number_to_accept = models.IntegerField()
     count = models.IntegerField()
+=======
+>>>>>>> refs/remotes/origin/master
