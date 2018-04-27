@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 from __future__ import absolute_import, unicode_literals
 from celery import task
 import os.path
@@ -40,23 +40,4 @@ def aggregate_stats():
         f.write(str(str(sub_size) + ',' + str(fin_size) + ',' + str(interval_art) + '\n'))
 
 
-=======
-# Create your tasks here
-from __future__ import absolute_import, unicode_literals
-from celery import shared_task
 
-
-@shared_task
-def add(x, y):
-    return x + y
-
-
-@shared_task
-def mul(x, y):
-    return x * y
-
-
-@shared_task
-def xsum(numbers):
-    return sum(numbers)
->>>>>>> refs/remotes/origin/master
