@@ -6,40 +6,22 @@ import datetime
 import os
 import sys
 import tensorflow as tf
-import json
-import csv
-import requests
-# Create your views here.
+
 import time
-from django.http import HttpResponse
-from rest_framework import status
-from rest_framework.decorators import api_view, permission_classes, authentication_classes, parser_classes
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly
-from rest_framework.parsers import FileUploadParser
+from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser
-from rest_framework.parsers import JSONParser
+
+from api.models import *
 
 GPSX = 38.3029
 GPSY = 23.7535
 
+
 class FileUploadView(APIView):
     parser_classes = (MultiPartParser, )
-    permission_classes= (AllowAny, )
-
-
-    def makeRejectedJson(self,filename):
-        with open('rejected.txt', 'a') as outfile:
-            outfile.write(filename+'\n')
-        outfile.close()
-
-    def makeJson(self, response_time) :
-
-       with open('temp_response.txt', 'a') as outfile:
-           outfile.write(str(response_time)+'\n')
-       outfile.close()
-
+    permission_classes = (AllowAny, )
 
     def posttoorion(self, sensorid, size, duration, field_score, fire_score, gps1, gps2):
         pts = datetime.datetime.now().strftime('%s')
@@ -57,18 +39,17 @@ class FileUploadView(APIView):
                 "value": str(pts),
                 "type": "time"
             },
-	       "size": {
-                "value":size,
-                "type":"bytes"
+            "size": {
+                "value": size,
+                "type": "bytes"
             },
             "duration": {
-                "value":duration,
-                "type":"seconds"
+                "value": duration,
+                "type": "seconds"
             },
- 
             "fire_score": {
-                "value":fire_score,
-                "type":"tensorflow_score"
+                "value": fire_score,
+                "type":" tensorflow_score"
             },
             "field_score": {
                 "value": field_score,
@@ -90,55 +71,54 @@ class FileUploadView(APIView):
         # log network traffic (naive)
         print json_bytes,headers_bytes, total
 
-        #response = requests.post(url, headers=headers, json=json)
-        print(str(response))
-        return str(response)
+        # response = requests.post(url, headers=headers, json=json)
+        # print(str(response))
+        # return str(response)
 
     def post(self, request, filename, format='jpg'):
 
-        with open('rules.txt', 'rb') as file:
-            content = file.readlines()
-        content = [x.strip() for x in content]
-        a = content[0]
-        a = int(a)
-        b = content[1]
-        b = int(b)
-        file.close()
-        bound = a-b
-        print (bound)
+        all_entries = RequestToAccept.objects.all()
+        for e in all_entries:
+            print(e.number_to_accept)
+            print(e.count)
 
-        if bound<=0:
-            self.makeRejectedJson(filename)
+        bound = e.number_to_accept-e.count
+        # print (bound)
+
+        if bound <= 0:
+            start_time = request.data['start_time']
+            src_img = request.data['file']
+            r = RequestRejected(name=src_img, time_arrived=start_time)
+            r.save()
+
             return Response("Rejected")
 
         else:
-            a = str(a)
-            b = str(b + 1)
-            with open('rules.txt', 'w') as outfile:
-                outfile.write(a+'\n')
-                outfile.write(b+'\n')
-            outfile.close()
+            change = RequestToAccept.objects.all()
+            count = change.first().count
+            change.update(count=count + 1)
 
             size = request.data['size']
             start_time = request.data['start_time']
             temp_list = []
             src_img = request.data['file']
-            dir = os.getcwd()
-            filename = os.path.join(dir, '')
+            dirr = os.getcwd()
+            filename = os.path.join(dirr, '')
             dest_img = filename+src_img.name
-        
+
+            b = RequestSubmitted(name=src_img, time_arrived=start_time)
+            b.save()
+
             with open(dest_img, 'wb+' ) as dest:
                 for c in src_img.chunks():
                     dest.write(c)
-
             image_data = tf.gfile.FastGFile(dest_img, 'rb').read()
-
             if os.path.isfile(dest_img):
                 os.remove(dest_img)
             else:
                 print("Error: temp file not found")
-	
-          # Loads label file, strips off carriage return
+
+            # Loads label file, strips off carriage return
             label_lines = [line.rstrip() for line
             # path file of retrained_labels
             in tf.gfile.GFile(filename+"/retrained_labels")]
@@ -146,7 +126,7 @@ class FileUploadView(APIView):
             # Unpersists graph from file
             with tf.gfile.FastGFile(filename+"/retrained_graph.pb", 'rb') as f:
 
-            # Unpersists graph from file
+                # Unpersists graph from file
                 graph_def = tf.GraphDef()
                 graph_def.ParseFromString(f.read())
                 _ = tf.import_graph_def(graph_def, name='')
@@ -154,7 +134,7 @@ class FileUploadView(APIView):
             # Feed the image_data as input to the graph and get first prediction
             with tf.Session() as sess:
                 softmax_tensor = sess.graph.get_tensor_by_name('final_result:0')
-                predictions = sess.run(softmax_tensor,{'DecodeJpeg/contents:0': image_data})
+                predictions = sess.run(softmax_tensor, {'DecodeJpeg/contents:0': image_data})
                 # Sort to show labels of first prediction in order of confidence
                 top_k = predictions[0].argsort()[-len(predictions[0]):][::-1]
         
@@ -162,7 +142,7 @@ class FileUploadView(APIView):
                     human_string = label_lines[node_id]
                     score = predictions[0][node_id]
                     if human_string in ['field fire']:
-                        #temp_list.append([human_string, score])
+                        # temp_list.append([human_string, score])
                         temp_list.insert(0,[human_string, score])
                     if human_string in ['field']:
                         temp_list.insert(1,[human_string, score])
@@ -170,18 +150,16 @@ class FileUploadView(APIView):
             # Send data to OCB
             fire = round(temp_list[0][1],5)
             field = 1-fire
-            end_time = time.time()# * 1000
+            end_time = time.time()  # * 1000
             duration = float(end_time) - float(start_time)
-            duration = round(duration,3)
+            duration = round(duration, 3)
+
+            # return Response(self.posttoorion("edgy", size, duration, field, fire, GPSX, GPSY)) # Post to OCB
+            f = RequestFinished(name=src_img, time_arrived=start_time, response_time=duration)
+            f.save()
+        return Response(round(temp_list[0][1], 5))
 
 
-            #return Response(self.posttoorion("edgy", size, duration, field, fire, GPSX, GPSY)) # Post to OCB
-
-            self.makeJson(duration)
-	    return Response(round(temp_list[0][1],5))
-
-
-   
 
 
 
