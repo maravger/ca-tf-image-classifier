@@ -20,8 +20,7 @@ def main():
     # for the first X minutes send "not fire-containing" images
     post_url = "http://127.0.0.1:8000/ca_tf/serverInfo/"
     number= 10
-    pts = time.time()
-    data_json = {"number" : number ,"interval_time" : pts}
+    data_json = {"number" : number }
     r=requests.post(post_url , json= data_json)
     print(r.text)
         #subprocess.call(["curl", "-s", "-X", \

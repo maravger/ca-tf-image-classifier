@@ -23,11 +23,11 @@ def main():
         n = str(random.randint(1,3))
         img = "n"+n+".jpg"
         post_url = "http://127.0.0.1:8000/ca_tf/imageUpload/"+img
-        size = os.path.getsize("images/"+img)
+        size = os.path.getsize("../images/"+img)
         #pts = datetime.datetime.now().strftime('%f')
 	pts = time.time()# * 1000
         json = {"size" : size, "start_time" : pts}
-        files = {"file": open("images/"+img, "rb")}
+        files = {"file": open("../images/"+img, "rb")}
         r=requests.post(post_url, files=files, data=json)
         #print(r.text)
         #subprocess.call(["curl", "-s", "-X", \

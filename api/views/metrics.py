@@ -6,7 +6,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from api.models import *
+from api.models import Tasks_Interval
 
 
 @api_view(['GET'])
@@ -15,16 +15,14 @@ from api.models import *
 def GetLogs(request, format=None):
 
     # Submitted
-    all_entries = RequestSubmitted.objects.all()
-    submitted = all_entries.count()
+    details = Tasks_Interval.objects.first()
+    submitted = details.submitted
 
     # finished
-    all_entries = RequestFinished.objects.all()
-    finished = all_entries.count()
-    sum = 0
-    for e in all_entries:
-        sum += e.response_time
+    finished = details.finished
 
+    # response time
+    sum = details.total_time
     if sum == 0:
         average_response_time = 0
     else:
@@ -32,8 +30,7 @@ def GetLogs(request, format=None):
         average_response_time = round(average_response_time, 3)
 
     # rejected
-    all_entries = RequestRejected.objects.all()
-    rejected = all_entries.count()
+    rejected = details.rejected
 
     # print (submitted, finished, rejected)
 
@@ -43,10 +40,6 @@ def GetLogs(request, format=None):
     json_data = json.loads(data_d)
 
     # print(json_data)
-
-    RequestSubmitted.objects.all().delete()
-    RequestRejected.objects.all().delete()
-    RequestFinished.objects.all().delete()
-
+    Tasks_Interval.objects.all().delete()
     return Response(json_data)
 

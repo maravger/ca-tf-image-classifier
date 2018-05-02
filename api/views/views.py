@@ -13,7 +13,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser
 
-from api.models import *
+from api.models import Tasks_Interval
 
 GPSX = 38.3029
 GPSY = 23.7535
@@ -76,27 +76,28 @@ class FileUploadView(APIView):
         # return str(response)
 
     def post(self, request, filename, format='jpg'):
-
-        all_entries = RequestToAccept.objects.all()
-        for e in all_entries:
-            print(e.number_to_accept)
-            print(e.count)
-
-        bound = e.number_to_accept-e.count
-        # print (bound)
+        stats = Tasks_Interval.objects.first()
+        number_to_accept = stats.number_to_accept
+        count = stats.submitted
+        bound = number_to_accept - count
+        print (bound)
 
         if bound <= 0:
             start_time = request.data['start_time']
             src_img = request.data['file']
-            r = RequestRejected(name=src_img, time_arrived=start_time)
+
+            r = Tasks_Interval.objects.first()
+            finished = r.finished
+            r.finished = finished + 1
             r.save()
 
             return Response("Rejected")
 
         else:
-            change = RequestToAccept.objects.all()
-            count = change.first().count
-            change.update(count=count + 1)
+            s = Tasks_Interval.objects.first()
+            submitted = s.submitted
+            s.submitted = submitted + 1
+            s.save()
 
             size = request.data['size']
             start_time = request.data['start_time']
@@ -105,9 +106,6 @@ class FileUploadView(APIView):
             dirr = os.getcwd()
             filename = os.path.join(dirr, '')
             dest_img = filename+src_img.name
-
-            b = RequestSubmitted(name=src_img, time_arrived=start_time)
-            b.save()
 
             with open(dest_img, 'wb+' ) as dest:
                 for c in src_img.chunks():
@@ -120,6 +118,7 @@ class FileUploadView(APIView):
 
             # Loads label file, strips off carriage return
             label_lines = [line.rstrip() for line
+
             # path file of retrained_labels
             in tf.gfile.GFile(filename+"/retrained_labels")]
 
@@ -155,7 +154,11 @@ class FileUploadView(APIView):
             duration = round(duration, 3)
 
             # return Response(self.posttoorion("edgy", size, duration, field, fire, GPSX, GPSY)) # Post to OCB
-            f = RequestFinished(name=src_img, time_arrived=start_time, response_time=duration)
+            f = Tasks_Interval.objects.first()
+            finished = f.finished
+            f.finished = finished + 1
+            total_time = f.total_time
+            f.total_time = total_time + duration
             f.save()
         return Response(round(temp_list[0][1], 5))
 
