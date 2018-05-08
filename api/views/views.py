@@ -77,6 +77,15 @@ class FileUploadView(APIView):
 
     def post(self, request, filename, format='jpg'):
         stats = Tasks_Interval.objects.first()
+
+        if not stats:
+            b = Tasks_Interval(number_to_accept=100,
+                               submitted=0,
+                               finished=0,
+                               rejected=0,
+                               total_time=0)
+            b.save()
+            stats = Tasks_Interval.objects.first()
         number_to_accept = stats.number_to_accept
         count = stats.submitted
         bound = number_to_accept - count
@@ -85,7 +94,6 @@ class FileUploadView(APIView):
         if bound <= 0:
             start_time = request.data['start_time']
             src_img = request.data['file']
-
             r = Tasks_Interval.objects.first()
             finished = r.finished
             r.finished = finished + 1
@@ -118,10 +126,8 @@ class FileUploadView(APIView):
 
             # Loads label file, strips off carriage return
             label_lines = [line.rstrip() for line
-
-            # path file of retrained_labels
+                           # path file of retrained_labels
             in tf.gfile.GFile(filename+"/retrained_labels")]
-
             # Unpersists graph from file
             with tf.gfile.FastGFile(filename+"/retrained_graph.pb", 'rb') as f:
 

@@ -76,7 +76,7 @@ def main():
         pts = datetime.datetime.now().strftime('%s')
         n = str(random.randint(1,3))
         img = "../images/n"+n+".jpg"
-        #fire_score = subprocess.check_output(["curl", "-s", "-X", \
+        # fire_score = subprocess.check_output(["curl", "-s", "-X", \
         #        "POST", "-F", "file=@images/"+img+";type=image/jpeg", "http://193.190.127.181:8000/ca_tf/imageUpload/"+img])
         subprocess_log_start_time = time.time()
         fire_score = subprocess.check_output(["python", "../classify.py", img])
