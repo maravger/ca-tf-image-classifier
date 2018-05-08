@@ -9,5 +9,6 @@ RUN apt-get update \
 
 ADD . ./
 
+ENTRYPOINT [ "python",  "./manage.py", "migrate"]
 ENTRYPOINT [ "python", "-u", "./manage.py", "runserver", "0.0.0.0:8000"]
 
