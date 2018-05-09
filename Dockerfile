@@ -9,6 +9,9 @@ RUN apt-get update \
 
 ADD . ./
 
-ENTRYPOINT [ "python",  "./manage.py", "migrate"]
-ENTRYPOINT [ "python", "-u", "./manage.py", "runserver", "0.0.0.0:8000"]
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+ENTRYPOINT /entrypoint.sh
+#ENTRYPOINT [ "python", "-  "./manage.py", "migrate"]
+#ENTRYPOINT [ "python", "-u", "./manage.py", "runserver", "0.0.0.0:8000"]
 
