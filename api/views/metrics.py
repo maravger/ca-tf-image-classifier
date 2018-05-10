@@ -10,6 +10,15 @@ from api.models import Tasks_Interval
 @api_view(['GET'])
 @permission_classes((AllowAny,))
 def GetLogs(request, format=None):
+    Tasks_Interval.objects.all().delete()
+    
+    b = Tasks_Interval(number_to_accept=100,
+                       submitted=0,
+                       finished=0,
+                       rejected=0,
+                       total_time=0)
+    b.save()
+
     # Submitted
     details = Tasks_Interval.objects.first()
     submitted = details.submitted
