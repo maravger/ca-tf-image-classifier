@@ -1,0 +1,13 @@
+[
+  {
+    "model": "api.Tasks_Interval",
+    "pk": 1,
+    "fields": {
+      "number_to_accept":"100000", 
+      "submitted":"0",
+      "finished":"0",
+      "rejected": "0",
+      "total_time": "0"
+    }
+  }
+]

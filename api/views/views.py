@@ -78,6 +78,7 @@ class FileUploadView(APIView):
     def post(self, request, filename, format='jpg'):
         stats = Tasks_Interval.objects.first()
 
+        # for stand-alone version. It is useless if it is monitoring by a real Controller
         if not stats:
             b = Tasks_Interval(number_to_accept=100,
                                submitted=0,
@@ -86,7 +87,7 @@ class FileUploadView(APIView):
                                total_time=0)
             b.save()
             stats = Tasks_Interval.objects.first()
-        print stats.finished
+
         number_to_accept = stats.number_to_accept
         count = stats.submitted
         bound = number_to_accept - count
@@ -162,6 +163,8 @@ class FileUploadView(APIView):
 
             # return Response(self.posttoorion("edgy", size, duration, field, fire, GPSX, GPSY)) # Post to OCB
             f = Tasks_Interval.objects.first()
+
+            # for stand-alone version. It is useless if it is monitoring by a real Controller
             if not f:
                 b = Tasks_Interval(number_to_accept=100,
                                    submitted=0,
@@ -170,7 +173,7 @@ class FileUploadView(APIView):
                                    total_time=0)
                 b.save()
                 f = Tasks_Interval.objects.first()
-            print f.finished
+
             finished = f.finished
             f.finished = finished + 1
             total_time = f.total_time
