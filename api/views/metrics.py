@@ -15,13 +15,12 @@ def GetLogs(request, format=None):
     details = Tasks_Interval.objects.first()
     if not details:
         b = Tasks_Interval(number_to_accept=100,
-                       submitted=0,
-                       finished=0,
-                       rejected=0,
-                       total_time=0)
+                           submitted=0,
+                           finished=0,
+                           rejected=0,
+                           total_time=0)
         b.save()
         details = Tasks_Interval.objects.first()
-
 
     submitted = details.submitted
     # finished
