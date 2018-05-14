@@ -4,10 +4,32 @@ An image classification service, developed using Google’s Tensorflow deep lear
 
 The model can be easily retrained to match your specific classification needs.
 This repo is a Dockerized Django Rest-Api service, able to cooperate with Edgy-Controller (repo: https://github.com/maravger/edgy-controller.git) for offloading TensorFlow based applications in the network edge. This service is able to manage requests from clients and send ctucial data back to the controller, necessary for the scaling algorithm explained in the aforementioned repo.     
+You can choose either Docker execution or native execution! 
 
-## Installation
-
+## Docker Execution
 First of all make sure you have Docker installed. If not, head to https://docs.docker.com/install/
+
+Build:
+```bash
+docker build -t ca-tf .
+```
+
+Run the service as a server:
+```bash
+docker run -it -p 8000:8000 ca-tf
+```
+
+You are good to go. Test the service using one of the predifined client scenarios:
+```bash
+cd client_scenarios/
+client_scenario_2.py
+```
+
+*Make sure to change the IPs within the scripts, to match your server's installation.
+Also, it's neccessary that you add your server's IP to ca_tf/settings.py -> ALLOWED_HOSTS.
+*
+
+## Native Installation and Execution
 
 Then, install pip and virtualenv:
 ```bash
@@ -29,32 +51,27 @@ Activate the Virtualenv environment by issuing the following command:
 ```bash
 source ./bin/activate
 ```
-
-## Docker install
-Build:
+...and install the requirements:
 ```bash
-docker build -t ca-tf .
+sudo pip install -r requirements.txt
 ```
 
-Run the service as a server:
+Now you can run the service nativelly
 ```bash
-docker run -i -p 8000:8000 ca-tf
+chmod +x /entrypoint.sh
+./entrypoint.sh
 ```
 
-You are good to go. Test the service using one of the predifined client scenarios:
-```bash
-cd client_scenarios/
-client_scenario_2.py
-```
+
 
 ## Local execution of the Image-Classifier Service for testing
 ```bash
 ./classify.py IMAGE
 ```
 
-
 ## Additional script for converting OCB json data to CSV.
 In json_to_csv.py:
 1. change path of .txt file you want to convert. 
 2. output.json contains your flattened json.
 3. include the keys you want to include to your csv. 
+
