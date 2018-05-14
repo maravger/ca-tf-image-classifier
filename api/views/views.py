@@ -6,8 +6,8 @@ import datetime
 import os
 import sys
 import tensorflow as tf
-
 import time
+from django.db import transaction,OperationalError
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
@@ -76,17 +76,21 @@ class FileUploadView(APIView):
         # return str(response)
 
     def post(self, request, filename, format='jpg'):
-        stats = Tasks_Interval.objects.first()
+        with transaction.atomic():
+            stats = Tasks_Interval.objects.select_for_update().first()
 
-        # for stand-alone version. It is useless if it is monitoring by a real Controller
-        if not stats:
-            b = Tasks_Interval(number_to_accept=100,
-                               submitted=0,
-                               finished=0,
-                               rejected=0,
-                               total_time=0)
-            b.save()
-            stats = Tasks_Interval.objects.first()
+            # for stand-alone version. It is useless if it is monitoring by a real Controller
+            if not stats:
+                b = Tasks_Interval(number_to_accept=100,
+                                   submitted=0,
+                                   finished=0,
+                                   rejected=0,
+                                   total_time=0)
+                try:
+                    b.save()
+                except OperationalError:
+                    print("DB locked: concurrency avoided")
+                stats = Tasks_Interval.objects.select_for_update().first()
 
         number_to_accept = stats.number_to_accept
         count = stats.submitted
@@ -96,18 +100,25 @@ class FileUploadView(APIView):
         if bound <= 0:
             start_time = request.data['start_time']
             src_img = request.data['file']
-            r = Tasks_Interval.objects.first()
-            finished = r.finished
-            r.finished = finished + 1
-            r.save()
-
+            with transaction.atomic():
+                r = Tasks_Interval.objects.select_for_update().first()
+                finished = r.finished
+                r.finished = finished + 1
+                try:
+                    r.save()
+                except OperationalError:
+                    print("DB locked: concurrency avoided")
             return Response("Rejected")
 
         else:
-            s = Tasks_Interval.objects.first()
-            submitted = s.submitted
-            s.submitted = submitted + 1
-            s.save()
+            with transaction.atomic():
+                s = Tasks_Interval.objects.select_for_update().first()
+                submitted = s.submitted
+                s.submitted = submitted + 1
+                try:
+                    s.save()
+                except OperationalError:
+                    print("DB locked: concurrency avoided")
 
             size = request.data['size']
             start_time = request.data['start_time']
@@ -144,7 +155,7 @@ class FileUploadView(APIView):
                 predictions = sess.run(softmax_tensor, {'DecodeJpeg/contents:0': image_data})
                 # Sort to show labels of first prediction in order of confidence
                 top_k = predictions[0].argsort()[-len(predictions[0]):][::-1]
-        
+
                 for node_id in top_k:
                     human_string = label_lines[node_id]
                     score = predictions[0][node_id]
@@ -153,7 +164,7 @@ class FileUploadView(APIView):
                         temp_list.insert(0,[human_string, score])
                     if human_string in ['field']:
                         temp_list.insert(1,[human_string, score])
-               
+
             # Send data to OCB
             fire = round(temp_list[0][1],5)
             field = 1-fire
@@ -162,23 +173,33 @@ class FileUploadView(APIView):
             duration = round(duration, 3)
 
             # return Response(self.posttoorion("edgy", size, duration, field, fire, GPSX, GPSY)) # Post to OCB
-            f = Tasks_Interval.objects.first()
 
-            # for stand-alone version. It is useless if it is monitoring by a real Controller
-            if not f:
-                b = Tasks_Interval(number_to_accept=100,
-                                   submitted=0,
-                                   finished=0,
-                                   rejected=0,
-                                   total_time=0)
-                b.save()
-                f = Tasks_Interval.objects.first()
+            with transaction.atomic():
+                f = Tasks_Interval.objects.select_for_update().first()
 
-            finished = f.finished
-            f.finished = finished + 1
-            total_time = f.total_time
-            f.total_time = total_time + duration
-            f.save()
+                # for stand-alone version. It is useless if it is monitoring by a real Controller
+                if not f:
+                    b = Tasks_Interval(number_to_accept=100,
+                                       submitted=0,
+                                       finished=0,
+                                       rejected=0,
+                                       total_time=0)
+                    try:
+                        b.save()
+                    except OperationalError:
+                        print("DB locked: concurrency avoided")
+
+                    f = Tasks_Interval.objects.select_for_update().first()
+
+                finished = f.finished
+                f.finished = finished + 1
+                total_time = f.total_time
+                f.total_time = total_time + duration
+                try:
+                    f.save()
+                except OperationalError:
+                    print("DB locked: concurrency avoided")
+
         return Response(round(temp_list[0][1], 5))
 
 
