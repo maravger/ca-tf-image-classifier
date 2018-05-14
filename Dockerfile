@@ -1,6 +1,5 @@
 FROM python:2.7.13
 
-ADD . ./
 ADD ./requirements.txt ./
 
 RUN apt-get update \
