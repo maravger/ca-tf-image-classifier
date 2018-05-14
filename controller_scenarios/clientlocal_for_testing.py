@@ -17,7 +17,7 @@ def main():
     # time.sleep(random.randint(0,6))
 
     first_start_time = time.time()
-
+    interval_counter = 1
     # for the first X minutes send "not fire-containing" images
     while (time.time() - first_start_time) < 6*MINUTE:
         n = str(random.randint(1,3))
@@ -32,10 +32,16 @@ def main():
         #print(r.text)
         #subprocess.call(["curl", "-s", "-X", \
         #        "POST", "-F", "file=@images/"+img+";type=image/jpeg", "http://193.190.127.181:8000/ca_tf/imageUpload/"+img])
+        if (time.time() - first_start_time)/ (30* interval_counter) > 1:
+            post_url = "http://127.0.0.1:8000/ca_tf/getLogs/"
+            r = requests.get(post_url)  # , files=files, data=json)
+            print(r.text)
+            interval_counter += 1
+
         time.sleep(random.randint(0,3))
-    
-        
-    
+
+
+
 
 if __name__ == "__main__":
     main()
