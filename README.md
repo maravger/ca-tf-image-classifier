@@ -53,7 +53,7 @@ source ./bin/activate
 ```
 ...and install the requirements:
 ```bash
-sudo pip install -r requirements.txt
+pip install -r requirements.txt
 ```
 
 Now you can run the service nativelly
