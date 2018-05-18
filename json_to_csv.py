@@ -9,7 +9,7 @@ from datetime import datetime
 
 
 def main():
-    f = open('3.cloud_info_48_samples.txt')
+    f = open('log_txt.js')
     input = json.load(f)
     
     # x="field_score"
@@ -41,7 +41,7 @@ def flattenjson(b, delim):
         if isinstance( b[i], dict ):
             get = flattenjson( b[i], delim )
             for j in get.keys():
-                if j == "value":
+                if j == "sum":
                     if i == "dateCreated":
                         val[i + delim + j] = UTC_time_to_epoch(get[j])
                     else:    

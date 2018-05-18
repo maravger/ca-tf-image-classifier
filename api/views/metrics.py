@@ -64,11 +64,15 @@ def GetLogs(request, format=None):
     # print(json_data)
     Tasks_Interval.objects.all().delete()
 
-    bits_per_second, jitter_ms, lost_packets, packets, lost_percent = accumulate_iperf_stats()
+    # bits_per_second, jitter_ms, lost_packets, packets, lost_percent = accumulate_iperf_stats()
+
+    # data = {"requests_submitted": submitted, "requests_finished": finished, "requests_rejected": rejected,
+        #    "average_response_time": average_response_time, "bits_per_second": bits_per_second,
+        #    "jitter_ms": jitter_ms, "lost_packets": lost_packets, "packets": packets, "lost_percent": lost_percent}
 
     data = {"requests_submitted": submitted, "requests_finished": finished, "requests_rejected": rejected,
-            "average_response_time": average_response_time, "bits_per_second": bits_per_second,
-            "jitter_ms": jitter_ms, "lost_packets": lost_packets, "packets": packets, "lost_percent": lost_percent}
+                    "average_response_time": average_response_time}
+
     data_d = json.dumps(data)
     json_data = json.loads(data_d)
 
