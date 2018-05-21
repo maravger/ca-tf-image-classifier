@@ -80,7 +80,8 @@ def GetLogs(request, format=None):
     data_d = json.dumps(data)
     json_data = json.loads(data_d)
     
-    os.remove("log1.txt")
+    open("log1.txt", "w").close()
+  
     return Response(json_data)
 
 
