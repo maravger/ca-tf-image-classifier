@@ -20,7 +20,8 @@ def main():
     while (time.time() - first_start_time) < 6*MINUTE:
         #n = str(random.randint(1,3))
         #img = "n"+n+".jpg"
-        post_url = "http://127.0.0.1:8000/ca_tf/getLogs/"
+        post_url = "http://10.0.0.50:8000/ca_tf/getLogs/"
+
         r=requests.get(post_url)#, files=files, data=json)
         print(r.text)
         #subprocess.call(["curl", "-s", "-X", \

@@ -25,7 +25,7 @@ def main():
     while (time.time() - first_start_time) < 6*MINUTE:
         n = str(random.randint(1,3))
         img = "n"+n+".jpg"
-        post_url = "http://127.0.0.1:8000/ca_tf/imageUpload/"+img
+        post_url = "http://10.0.0.50:8000/ca_tf/imageUpload/"+img
         size = os.path.getsize("../images/"+img)
         # pts = datetime.datetime.now().strftime('%f')
         pts = time.time()  # * 1000
@@ -45,7 +45,7 @@ def main():
 
         # time.sleep(random.randint(0,3))
         time.sleep(sleeping_time)
-        # subprocess.call(["iperf3", "-c", "127.0.0.1", "-p", "8000", "-u", "-R", "-t", "2", "-J"])
+        subprocess.call(["iperf3", "-c", "10.0.0.50", "-p", "5201", "-u", "-R", "-t", "2", "-J"])
 
 
 if __name__ == "__main__":
