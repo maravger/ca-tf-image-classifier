@@ -3,18 +3,20 @@ import json
 import os
 import csv
 import errno
+import shutil
 from rest_framework.decorators import permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from api.models import Tasks_Interval
-
+from django.db import transaction
 
 
 @api_view(['GET'])
 @permission_classes((AllowAny,))
-def GetLogs(request, format=None):
 
+def GetLogs(request, format=None):
+    
     # Submitted
     details = Tasks_Interval.objects.first()
     if not details:
@@ -80,7 +82,8 @@ def GetLogs(request, format=None):
     data_d = json.dumps(data)
     json_data = json.loads(data_d)
     
-    open("log1.txt", "w").close()
+    shutil.copyfile('./log1.txt', './loginterval.txt')
+    open("./log1.txt", "w").close()
   
     return Response(json_data)
 
@@ -89,7 +92,7 @@ def accumulate_iperf_stats():
 
     a = "temp"
     r = open('log.txt', 'a+')
-    with open('../log1.txt', 'rb') as f:
+    with open('./log1.txt', 'rb') as f:
         for line in f:
             if a == "temp":
                 r.write('[{\n')

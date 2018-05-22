@@ -15,7 +15,7 @@ def main():
     requestscounter = 0
     interval_counter = 1
 
-    sleeping_time = float(sys.argv[1])
+    sleeping_time = random.randint(1, float(sys.argv[1]))
     # initially sleep for a (uniformly) random time between 0 and 6 seconds
     # time.sleep(random.randint(0,6))
 
@@ -23,6 +23,9 @@ def main():
 
     # for the first X minutes send "not fire-containing" images
     while (time.time() - first_start_time) < 6*MINUTE:
+        
+        subprocess.call(["iperf3", "-c", "10.0.0.50", "-p", "5202", "-u", "-R", "-t", "2", "-J", "--logfile", "./skata.txt"])
+        
         n = str(random.randint(1,3))
         img = "n"+n+".jpg"
         post_url = "http://10.0.0.50:8000/ca_tf/imageUpload/"+img
@@ -39,13 +42,13 @@ def main():
         # "POST", "-F", "file=@images/"+img+";type=image/jpeg", "http://193.190.127.181:8000/ca_tf/imageUpload/"+img])
         if (time.time() - first_start_time) / (30 * interval_counter) > 1:
 
-            print ("request for this script this interval: %d \n" % requestscounter)
+            #print ("request for this script this interval: %d \n" % requestscounter)
             requestscounter = 0
             interval_counter += 1
 
         # time.sleep(random.randint(0,3))
         time.sleep(sleeping_time)
-        subprocess.call(["iperf3", "-c", "10.0.0.50", "-p", "5201", "-u", "-R", "-t", "2", "-J"])
+        #subprocess.call(["iperf3", "-c", "10.0.0.50", "-p", "5201", "-u", "-R", "-t", "2", "-J"])
 
 
 if __name__ == "__main__":
