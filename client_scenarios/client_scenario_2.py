@@ -31,7 +31,7 @@ def main():
         #subprocess.call(["curl", "-s", "-X", \
         #        "POST", "-F", "file=@images/"+img+";type=image/jpeg", "http://193.190.127.181:8000/ca_tf/imageUpload/"+img])
         #time.sleep(random.randint(0,6))
-        
+
     
     second_start_time = time.time()
 

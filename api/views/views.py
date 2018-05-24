@@ -75,6 +75,12 @@ class FileUploadView(APIView):
         # print(str(response))
         # return str(response)
 
+    def gen_password( temp=8, charset="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()"):
+        random_bytes = os.urandom(8)
+        len_charset = len(charset)
+        indices = [int(len_charset * (ord(byte) / 256.0)) for byte in random_bytes]
+        return "".join([charset[index] for index in indices])
+
     def post(self, request, filename, format='jpg'):
         with transaction.atomic():
             stats = Tasks_Interval.objects.select_for_update().first()
@@ -95,7 +101,6 @@ class FileUploadView(APIView):
         number_to_accept = stats.number_to_accept
         count = stats.submitted
         bound = number_to_accept - count
-        print (bound)
 
         if bound <= 0:
             start_time = request.data['start_time']
@@ -126,7 +131,7 @@ class FileUploadView(APIView):
             src_img = request.data['file']
             dirr = os.getcwd()
             filename = os.path.join(dirr, '')
-            dest_img = filename+src_img.name
+            dest_img = filename + self.gen_password() + src_img.name
 
             with open(dest_img, 'wb+' ) as dest:
                 for c in src_img.chunks():
