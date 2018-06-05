@@ -17,7 +17,7 @@ def main():
 
     first_start_time = time.time()
     # for the first X minutes send "not fire-containing" images
-    while (time.time() - first_start_time) < 6*MINUTE:
+    while (time.time() - first_start_time) < 5*MINUTE:
         #n = str(random.randint(1,3))
         #img = "n"+n+".jpg"
         post_url = "http://10.0.0.50:8000/ca_tf/getLogs/"

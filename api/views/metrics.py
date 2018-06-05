@@ -66,24 +66,24 @@ def GetLogs(request, format=None):
     # print(json_data)
     Tasks_Interval.objects.all().delete()
 
-    bits_per_second, jitter_ms, lost_packets, packets, lost_percent = accumulate_iperf_stats()
+    #bits_per_second, jitter_ms, lost_packets, packets, lost_percent = accumulate_iperf_stats()
 
 
     
-    data = {"requests_submitted": submitted, "requests_finished": finished, "requests_rejected": rejected,
-            "average_response_time": average_response_time, "bits_per_second": bits_per_second,
-            "jitter_ms": jitter_ms, "lost_packets": lost_packets, "packets": packets, "lost_percent": lost_percent}
-
     #data = {"requests_submitted": submitted, "requests_finished": finished, "requests_rejected": rejected,
-     #               "average_response_time": average_response_time}
+     #       "average_response_time": average_response_time, "bits_per_second": bits_per_second,
+     #       "jitter_ms": jitter_ms, "lost_packets": lost_packets, "packets": packets, "lost_percent": lost_percent}
+
+    data = {"requests_submitted": submitted, "requests_finished": finished, "requests_rejected": rejected,
+                    "average_response_time": average_response_time}
 
     
 
     data_d = json.dumps(data)
     json_data = json.loads(data_d)
     
-    shutil.copyfile('./log1.txt', './loginterval.txt')
-    open("./log1.txt", "w").close()
+    #shutil.copyfile('./log1.txt', './loginterval.txt')
+    #open("./log1.txt", "w").close()
   
     return Response(json_data)
 
@@ -123,16 +123,27 @@ def accumulate_iperf_stats():
     sum = 0
     for a in b:
         sum += 1
+        #print ("sum : %d\n" % sum)
         if "bits_per_second" in a:
+            #print ("bits : %f\n" % a.get("bits_per_second"))
             bits_per_second += a.get("bits_per_second")
+            #print ("bits : %f\n" % bits_per_second)
         if "jitter_ms" in a:
+            #print ("jitter : %f\n" % jitter_ms)
             jitter_ms += a.get("jitter_ms")
+            #print ("jitter : %f\n" % jitter_ms)
         if "lost_packets" in a:
+            #print ("lost packets : %f\n" % lost_packets)
             lost_packets += a.get("lost_packets")
+            #print ("lost packets : %f\n" % lost_packets)
         if "packets" in a:
+         #   print ("packets : %f\n" % packets)
             packets += a.get("packets")
+          #  print ("packets : %f\n" % packets)
         if "lost_percent" in a:
+           # print ("lost_percent : %f\n" % lost_percent)
             lost_percent += a.get("lost_percent")
+            #print ("lost_percent : %f\n" % lost_percent)
 
     os.remove('log.txt')
 

@@ -8,12 +8,15 @@ import sys
 import tensorflow as tf
 import time
 from django.db import transaction,OperationalError
+
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser
 
 from api.models import Tasks_Interval
+from celery import task
+from api import tasks
 
 GPSX = 38.3029
 GPSY = 23.7535
@@ -62,7 +65,7 @@ class FileUploadView(APIView):
             "gpsy": {
                 "value": gps2,
                 "type": "gps"
-            }
+                }
         }
         json_bytes = sys.getsizeof(json)
         headers_bytes = sys.getsizeof(headers)
@@ -101,14 +104,13 @@ class FileUploadView(APIView):
         number_to_accept = stats.number_to_accept
         count = stats.submitted
         bound = number_to_accept - count
-
         if bound <= 0:
             start_time = request.data['start_time']
             src_img = request.data['file']
             with transaction.atomic():
                 r = Tasks_Interval.objects.select_for_update().first()
-                finished = r.finished
-                r.finished = finished + 1
+                rejected = r.rejected
+                r.rejected = rejected + 1
                 try:
                     r.save()
                 except OperationalError:
@@ -116,14 +118,15 @@ class FileUploadView(APIView):
             return Response("Rejected")
 
         else:
-            with transaction.atomic():
-                s = Tasks_Interval.objects.select_for_update().first()
-                submitted = s.submitted
-                s.submitted = submitted + 1
-                try:
-                    s.save()
-                except OperationalError:
-                    print("DB locked: concurrency avoided")
+            skata = tasks.post_submitted(request,filename)
+#            with transaction.atomic():
+#                s = Tasks_Interval.objects.select_for_update().first()
+#                submitted = s.submitted
+#                s.submitted = submitted + 1
+#                try:
+#                    s.save()
+#                except OperationalError:
+#                    print("DB locked: concurrency avoided")
 
             size = request.data['size']
             start_time = request.data['start_time']
@@ -209,14 +212,4 @@ class FileUploadView(APIView):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
+            
