@@ -7,7 +7,9 @@
       "submitted":"0",
       "finished":"0",
       "rejected": "0",
-      "total_time": "0"
+      "total_time": "0",
+      "transmission_time": "0",
+      "computation_time": "0"
     }
   }
 ]

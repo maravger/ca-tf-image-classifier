@@ -7,6 +7,7 @@ import os
 import sys
 import tensorflow as tf
 import time
+import csv
 from django.db import transaction,OperationalError
 
 from rest_framework.response import Response
@@ -85,6 +86,7 @@ class FileUploadView(APIView):
         return "".join([charset[index] for index in indices])
 
     def post(self, request, filename, format='jpg'):
+
         with transaction.atomic():
             stats = Tasks_Interval.objects.select_for_update().first()
 
@@ -106,6 +108,7 @@ class FileUploadView(APIView):
         bound = number_to_accept - count
         if bound <= 0:
             start_time = request.data['start_time']
+            start_process_time = time.time()
             src_img = request.data['file']
             with transaction.atomic():
                 r = Tasks_Interval.objects.select_for_update().first()
@@ -130,6 +133,7 @@ class FileUploadView(APIView):
 
             size = request.data['size']
             start_time = request.data['start_time']
+            start_process_time = time.time()
             temp_list = []
             src_img = request.data['file']
             dirr = os.getcwd()
@@ -203,10 +207,49 @@ class FileUploadView(APIView):
                 f.finished = finished + 1
                 total_time = f.total_time
                 f.total_time = total_time + duration
+                
+                transmission_time = f.transmission_time
+                computation_time = f.computation_time
+                f.transmission_time = transmission_time + duration - (end_time-start_process_time) 
+                f.computation_time = computation_time + end_time - start_process_time
+                #print duration
+                #print (end_time - start_process_time)
                 try:
                     f.save()
                 except OperationalError:
                     print("DB locked: concurrency avoided")
+
+
+#                filename = "csvs/logger"
+#                with open(filename, 'a') as myfile:
+#                    wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
+#                    if (os.path.getsize(filename)== 0):
+#                        wr.writerow(["transmission_time","computation_time","total_time"])
+ #                   wr.writerow([duration-(end_time-start_process_time),end_time-start_process_time,duration])
+
+#            with transaction.atomic():
+#                h = Tasks_Interval.objects.select_for_update().first()
+#                if not f:
+#                    b = Tasks_Interval(number_to_accept=100,
+#                                       submitted=0,
+#                                       finished=0,
+#                                       rejected=0,
+#                                       total_time=0)
+#                    try:
+#                        b.save()
+#                    except OperationalError:
+#                        print("DB locked: concurrency avoided")
+#                    f = Tasks_Interval.objects.select_for_update().first()
+#
+ #               transmission_time = f.transmission_time
+ #               computation_time = f.computation_time
+ #               f.transmission_time = transmission_time + duration - (end_time-start_process_time) 
+  #              f.computation_time = computation_time + end_time - start_process_time
+   #             try:
+   #                 f.save()
+    #            except OperationalError:
+     #               print("DB locked: concurrency avoided")
+                
 
         return Response(round(temp_list[0][1], 5))
 

@@ -11,48 +11,69 @@ import subprocess
 import asyncio
 import concurrent.futures
 import logging
+from scipy.stats import poisson
 
 MINUTE = 60
 
 def main():
-    sleeping_time = random.randint((float(sys.argv[1])-3), (float(sys.argv[1])+3))
-    sleeping_time = random.randint(0, sleeping_time)
+    rate = int(sys.argv[1])
+    print (rate)
     first_start_time = time.time()
-
-    while (time.time() - first_start_time) < 5*MINUTE:
+    interval_counter = 0
+    while (time.time() - first_start_time) < 600*MINUTE:
 #        subprocess.call(["iperf3", "-c", "10.0.0.50", "-p", "5202", "-u", "-R", "-t", "2", "-J"])
-        logging.basicConfig(
-                level=logging.INFO,
-                format='%(threadName)10s %(name)18s: %(message)s',
-                stream=sys.stderr,
-            )
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(post())
+        
+        
+        if (time.time()- first_start_time  > interval_counter*30):
+            logging.basicConfig(
+                    level=logging.INFO,
+                    format='%(threadName)10s %(name)18s: %(message)s',
+                    stream=sys.stderr,
+                )
+            loop = asyncio.get_event_loop()
+            loop.run_until_complete(post(rate))
+            interval_counter += 1
+
         # print(r.text)
         # subprocess.call(["curl", "-s", "-X", \
-        # "POST", "-F", "file=@images/"+img+";type=image/jpeg", "http://193.190.127.181:8000/ca_tf/imageUpload/"+img])
+        # "POST", "-F", "file=@images/"+img+";type=image/jpeg", "http://193.190.27.181:8000/ca_tf/imageUpload/"+img])
 
         # time.sleep(random.randint(0,3))
-        time.sleep(sleeping_time)
-        sleeping_time = random.randint(0, sleeping_time)
+        #time.sleep(sleeping_time)
+        #sleeping_time = random.randint(0, sleeping_time)
 
 
-async def post():
+async def post(rate):
         log = logging.getLogger('run_blocking_tasks')
         log.info('starting')
-
         log.info('creating executor tasks')
+        skata = poisson.rvs(rate)
+        if (skata<1) or (skata>42):
+            skata = poisson.rvs(rate)
+        print ("poisson number")
+        print (skata)
 
-        with concurrent.futures.ThreadPoolExecutor(max_workers=15) as executor:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=100) as executor:
             loop = asyncio.get_event_loop()
             response = []
+            st = []
+            for i in range(skata):
+                if i==0:
+                    st.append(random.expovariate(0.5))
+                else:
+                    st.append(st[i-1] + random.expovariate(0.5))
+                    if ((st[i]>29)):
+                        st[i] = random.expovariate(0.5)
+                    elif (st[i]>29):    
+                        st.append(st[i]+random.expovariate(0.5))   
+                print (st[i])
             futures = [
                 loop.run_in_executor(
                     executor,
                     post_skata,
-                    i,
+                    st[i],
                 )
-                for i in range(5)
+                for i in range(skata)
             ]
             log.info('waiting for executor tasks')
             completed, pending = await asyncio.wait(futures)
@@ -66,7 +87,8 @@ async def post():
 
 
 def post_skata(n):
-    time.sleep(random.randint(0, n))
+    #time.sleep(random.randint(n,n+1))
+    time.sleep(n)
     log = logging.getLogger('blocks({})'.format(n))
     #log.info('running')
 

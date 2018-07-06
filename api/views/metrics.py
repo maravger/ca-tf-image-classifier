@@ -39,6 +39,19 @@ def GetLogs(request, format=None):
         average_response_time = sum / finished
         average_response_time = round(average_response_time, 3)
     # rejected
+    sum1 = details.transmission_time
+    if sum1 == 0:
+        average_transmission_time = 0
+    else:
+        average_transmission_time = sum1 / finished
+        average_transmission_time = round(average_transmission_time, 3)
+    sum2 = details.computation_time
+    if sum2 == 0:
+        average_computation_time = 0
+    else:
+        average_computation_time = sum2 / finished
+        average_computation_time = round(average_computation_time, 3)
+    # rejected
     rejected = details.rejected
     # print (submitted, finished, rejected)
     # data = {"requests_submitted": submitted, "requests_finished": finished, "requests_rejected": rejected,
@@ -59,8 +72,8 @@ def GetLogs(request, format=None):
         # If opened for the first time, insert header row
         if os.path.getsize(filename) == 0:
             wr.writerow(["requests_submitted", "requests_finished", "requests_rejected",
-            "average_response_time"])
-        wr.writerow([submitted, finished, rejected, average_response_time])
+            "average_response_time","average_transmission_time","average_computation_time"])
+        wr.writerow([submitted, finished, rejected, average_response_time,average_transmission_time,average_computation_time])
 #
 
     # print(json_data)
@@ -74,8 +87,7 @@ def GetLogs(request, format=None):
      #       "average_response_time": average_response_time, "bits_per_second": bits_per_second,
      #       "jitter_ms": jitter_ms, "lost_packets": lost_packets, "packets": packets, "lost_percent": lost_percent}
 
-    data = {"requests_submitted": submitted, "requests_finished": finished, "requests_rejected": rejected,
-                    "average_response_time": average_response_time}
+    data = {"requests_submitted": submitted, "requests_finished": finished, "requests_rejected": rejected,          "average_response_time": average_response_time, "average_transmission_time": average_transmission_time, "average_computation_time": average_computation_time}
 
     
 

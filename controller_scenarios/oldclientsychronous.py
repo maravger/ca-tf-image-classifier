@@ -15,7 +15,7 @@ def main():
     requestscounter = 0
     interval_counter = 1
 
-    sleeping_time = random.randint(0, float(sys.argv[1])
+    sleeping_time = random.randint(0, 3)
     # initially sleep for a (uniformly) random time between 0 and 6 seconds
     # time.sleep(random.randint(0,6))
 
@@ -26,7 +26,7 @@ def main():
         
 #        subprocess.call(["iperf3", "-c", "10.0.0.50", "-p", "5202", "-u", "-R", "-t", "2", "-J"])
         n = str(random.randint(1,3))
-        img = "n"+n+".jpg"
+        img = "y"+n+".jpg"
         post_url = "http://10.0.0.50:8000/ca_tf/imageUpload/"+img
         size = os.path.getsize("../images/"+img)
         # pts = datetime.datetime.now().strftime('%f')
