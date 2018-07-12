@@ -26,11 +26,12 @@ def main ():
                 for line in data:
                     allNums=[]
                     allNums += line.strip().split("%")
-		    if (mem>5) and (cpu>30):
+		    if (float(allNums[0]>3)) or (float (allNums[1]>20)):
                     	mem += float (allNums[0])
                     	cpu += float (allNums[1])
                     	total +=1
             r = open ('log.txt','w')
+	    if total==0 : total = 1
             mem_avg = round(mem/total,3)
             cpu_avg = round(cpu/total,3)
             with open('logfinal.txt','a') as mf:
