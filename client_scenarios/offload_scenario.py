@@ -22,7 +22,7 @@ def main():
     while (time.time() - first_start_time) < 6*MINUTE:
         n = str(random.randint(1,3))
         img = "n"+n+".jpg"
-        post_url = "http://0.0.0.0:8000/ca_tf/imageUpload/"+img
+        post_url = "http://0.0.0.0:8002/central_controller/offload/app/0"
         size = os.path.getsize("../images/"+img)
         pts = datetime.datetime.now().strftime('%s')
         json = {"size" : size, "start_time" : pts}
@@ -39,7 +39,7 @@ def main():
     while (time.time() - second_start_time) < 6*MINUTE:
         n = str(random.randint(1,9))
         img = "y"+n+".jpg"
-        post_url = "http://0.0.0.0:8000/ca_tf/imageUpload/"+img
+        post_url = "http://0.0.0.0:8002/central_controller/offload/app/0"
         size = os.path.getsize("../images/"+img)
         pts = datetime.datetime.now().strftime('%s')
         json = {"size" : size, "start_time" : pts}
