@@ -26,7 +26,7 @@ def main():
 
         if (time.time() - first_start_time) > 30* interval_counter :
             interval_counter += 1
-            allNums = []
+            '''allNums = []
             total = 0
             mem=0 
             cpu=0
@@ -42,7 +42,7 @@ def main():
             r = open ('log.txt','w')
             mem_avg = round(mem/total,3)
             cpu_avg = round(cpu/total,3)
-
+            '''
             post_url = "http://10.0.0.50:8000/ca_tf/getLogs/"
             r=requests.get(post_url)#, files=files, data=json)
             print(r.text)
@@ -53,7 +53,7 @@ def main():
                 # If opened for the first time, insert header row
                 if os.path.getsize(filename) == 0:
                     wr.writerow(["requests_submitted", "requests_finished", "requests_rejected","average_response_time", "average_transmission_time", "average_computation_time","mem_percentage","cpu_percentage"])
-                wr.writerow([skata.get("requests_submitted"),skata.get("requests_finished"),skata.get("requests_rejected"),skata.get("average_response_time"),skata.get("average_transmission_time"),skata.get("average_computation_time"),mem_avg,cpu_avg])
+                wr.writerow([skata.get("requests_submitted"),skata.get("requests_finished"),skata.get("requests_rejected"),skata.get("average_response_time"),skata.get("average_transmission_time"),skata.get("average_computation_time")])#,mem_avg,cpu_avg])
 
             #time.sleep(30)
         

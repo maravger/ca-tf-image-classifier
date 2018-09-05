@@ -94,7 +94,9 @@ def post_skata(n):
 
     n = str(random.randint(1, 3))
     img = "n" + n + ".jpg"
-    post_url = "http://10.0.0.50:8000/ca_tf/imageUpload/" + img
+    p = str(random.randint(0,1))
+    #post_url = "http://10.0.0.50:8000/ca_tf/imageUpload/" + img
+    post_url = "http://192.168.0.1:8004/central_controller/offload/app/" + p
     size = os.path.getsize("../images/" + img)
     pts = time.time()  # * 1000
     json = {"size": size, "start_time": pts}
