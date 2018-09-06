@@ -48,7 +48,7 @@ async def post(rate):
         log.info('starting')
         log.info('creating executor tasks')
         skata = poisson.rvs(rate)
-        if (skata<1) or (skata>42):
+        if (skata<1) or (skata>42) or (skata<rate-5) or (skata>rate+5):
             skata = poisson.rvs(rate)
         print ("poisson number")
         print (skata)
