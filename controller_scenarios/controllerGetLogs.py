@@ -22,7 +22,7 @@ def main():
     interval_counter = 1 
     while (time.time() - first_start_time)<600*MINUTE:
         f = open("log.txt" , "a") 
-        subprocess.call(["docker", "stats", "--no-stream", "--format", "{{ .MemPerc }}  {{ .CPUPerc }}"] , stdout = f) # , ">", "./log.txt"])
+#        subprocess.call(["docker", "stats", "--no-stream", "--format", "{{ .MemPerc }}  {{ .CPUPerc }}"] , stdout = f) # , ">", "./log.txt"])
 
         if (time.time() - first_start_time) > 30* interval_counter :
             interval_counter += 1
@@ -43,7 +43,7 @@ def main():
             mem_avg = round(mem/total,3)
             cpu_avg = round(cpu/total,3)
             '''
-            post_url = "http://10.0.0.50:8000/ca_tf/getLogs/"
+            post_url = "http://147.102.13.123:8000/ca_tf/getLogs/"
             r=requests.get(post_url)#, files=files, data=json)
             print(r.text)
             skata = json.loads(r.text)
