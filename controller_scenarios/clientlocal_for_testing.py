@@ -12,6 +12,7 @@ import asyncio
 import concurrent.futures
 import logging
 from scipy.stats import poisson
+from requests.exceptions import ConnectionError
 
 MINUTE = 60
 
@@ -48,7 +49,7 @@ async def post(rate):
         log.info('starting')
         log.info('creating executor tasks')
         skata = poisson.rvs(rate)
-        if (skata<1) or (skata>42) or (skata<rate-5) or (skata>rate+5):
+        while (skata<1) or (skata>42) or (skata<rate-5) or (skata>rate+5):
             skata = poisson.rvs(rate)
         print ("poisson number")
         print (skata)
@@ -102,7 +103,12 @@ def post_skata(n):
     json = {"size": size, "start_time": pts}
     files = {"file": open("../images/" + img, "rb")}
     log.info('running')
-    r = requests.post(post_url, files=files, data=json)
+
+    try:
+    	r = requests.post(post_url, files=files, data=json)
+    except ConnectionError as e:
+	print e
+	os.system("./fix_connection.sh")
 
     log.info('done')
 
