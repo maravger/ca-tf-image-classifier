@@ -24,10 +24,10 @@ def main():
     while (time.time() - first_start_time) < 600*MINUTE:
 #        subprocess.call(["iperf3", "-c", "10.0.0.50", "-p", "5202", "-u", "-R", "-t", "2", "-J"])
         
-        
+        print (time.time()-first_start_time)        
         if (time.time()- first_start_time  > interval_counter*30):
             logging.basicConfig(
-                    level=logging.INFO,
+                    level=logging.CRITICAL,
                     format='%(threadName)10s %(name)18s: %(message)s',
                     stream=sys.stderr,
                 )
@@ -76,12 +76,12 @@ async def post(rate):
                 )
                 for i in range(skata)
             ]
-            log.info('waiting for executor tasks')
+            #log.info('waiting for executor tasks')
             completed, pending = await asyncio.wait(futures)
             results = [t.result() for t in completed]
-            log.info('results: {!r}'.format(results))
+            #log.info('results: {!r}'.format(results))
 
-            log.info('exiting')
+            #log.info('exiting')
 
             #for response in await asyncio.gather(*futures):
             #    pass
@@ -102,15 +102,15 @@ def post_skata(n):
     pts = time.time()  # * 1000
     json = {"size": size, "start_time": pts}
     files = {"file": open("../images/" + img, "rb")}
-    log.info('running')
+    #log.info('running')
 
     try:
     	r = requests.post(post_url, files=files, data=json)
     except ConnectionError as e:
-	print e
-	os.system("./fix_connection.sh")
+        print (e)
+        os.system("./fix_connection.sh")
 
-    log.info('done')
+    #log.info('done')
 
 if __name__ == "__main__":
     main()

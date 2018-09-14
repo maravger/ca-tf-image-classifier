@@ -48,7 +48,7 @@ def main():
             counter = 0
         if (time.time()- first_start_time  > interval_counter*30):
             logging.basicConfig(
-                    level=logging.INFO,
+                    level=logging.CRITICAL,
                     format='%(threadName)10s %(name)18s: %(message)s',
                     stream=sys.stderr,
                 )
@@ -128,8 +128,8 @@ def post_skata(n):
     try:
     	r = requests.post(post_url, files=files, data=json)
     except ConnectionError as e:
-	print e
-	os.system("./fix_connection.sh")
+        print (e)
+        os.system("./fix_connection.sh")
 
     log.info('done')
 

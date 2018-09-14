@@ -20,42 +20,72 @@ function cleanup() {
 }
 
 # App0: 2->18->2
-end=100
+end=86
 # Execute script
-echo "Phase 1 of 5: App0 2->18->2, for ${end}min. Initiated at: $(date '+%d/%m/%Y %H:%M:%S')"  
+echo "Phase 1 of 7: App0 2->18->2, for ${end}min. Initiated at: $(date '+%d/%m/%Y %H:%M:%S')"  
 python3.5 client_app0.py 2 18 $end
-echo "Phase 1 of 5 ended at: $(date '+%d/%m/%Y %H:%M:%S')"
+echo "Phase 1 of 7 ended at: $(date '+%d/%m/%Y %H:%M:%S')"
 echo
+
+sleep 10m
 
 # App1: 2->21->2
-end=110
+end=96
 # Execute script
-echo "Phase 2 of 5: App1 2->21->2, for ${end}min. Initiated at: $(date '+%d/%m/%Y %H:%M:%S')"  
+echo "Phase 2 of 7: App1 2->21->2, for ${end}min. Initiated at: $(date '+%d/%m/%Y %H:%M:%S')"  
 python3.5 client_app1.py 2 21 $end
-echo "Phase 2 of 5 ended at: $(date '+%d/%m/%Y %H:%M:%S')"
+echo "Phase 2 of 7 ended at: $(date '+%d/%m/%Y %H:%M:%S')"
 echo
+
+sleep 10m
 
 # App0: 2->36->2
-end=200
+end=180
 # Execute script
-echo "Phase 3 of 5: App0 2->36->2, for ${end}min. Initiated at: $(date '+%d/%m/%Y %H:%M:%S')"  
+echo "Phase 3 of 7: App0 2->36->2, for ${end}min. Initiated at: $(date '+%d/%m/%Y %H:%M:%S')"  
 python3.5 client_app0.py 2 36 $end
-echo "Phase 3 of 5 ended at: $(date '+%d/%m/%Y %H:%M:%S')"
+echo "Phase 3 of 7 ended at: $(date '+%d/%m/%Y %H:%M:%S')"
 echo
+
+sleep 10m
 
 # App1: 2->43->2
-end=220
+end=210
 # Execute script
-echo "Phase 4 of 5: App0 2->43->2, for ${end}min. Initiated at: $(date '+%d/%m/%Y %H:%M:%S')"  
+echo "Phase 4 of 7: App0 2->43->2, for ${end}min. Initiated at: $(date '+%d/%m/%Y %H:%M:%S')"  
 python3.5 client_app1.py 2 43 $end
-echo "Phase 4 of 5 ended at: $(date '+%d/%m/%Y %H:%M:%S')"
+echo "Phase 4 of 7 ended at: $(date '+%d/%m/%Y %H:%M:%S')"
 echo
 
+sleep 10m
+
 # App0: 2->36->2 & 43->2->43
-end=220
+end=210
 # Execute script
-echo "Phase 5 of 5: App0 2->36->2 & 43->2->43, for ${end}min. Initiated at: $(date '+%d/%m/%Y %H:%M:%S')"  
+echo "Phase 5 of 7: App0 2->36->2 & 43->2->43, for ${end}min. Initiated at: $(date '+%d/%m/%Y %H:%M:%S')"  
 python3.5 client_app0.py 2 36 $end &
 python3.5 client_app1.py 43 43 $end 
-echo "Phase 5 of 5 ended at: $(date '+%d/%m/%Y %H:%M:%S')"
+echo "Phase 5 of 7 ended at: $(date '+%d/%m/%Y %H:%M:%S')"
+echo
+
+sleep 10m
+
+# App0: 2->36->2 &-2->43->2
+end=210
+# Execute script
+echo "Phase 6 of 7: App0 2->36->2 & 2->43->2, for ${end}min. Initiated at: $(date '+%d/%m/%Y %H:%M:%S')"  
+python3.5 client_app0.py 2 36 $end &
+python3.5 client_app1.py 2 43 $end 
+echo "Phase 6 of 7 ended at: $(date '+%d/%m/%Y %H:%M:%S')"
+echo
+
+sleep 10m
+
+# App0: 36->2->18 & 21->43->2
+end=210
+# Execute script
+echo "Phase 7 of 7: App0 36->2->18 & 21->43->2, for ${end}min. Initiated at: $(date '+%d/%m/%Y %H:%M:%S')"  
+python3.5 client_app0.py 36 36 $end &
+python3.5 client_app1.py 20 43 $end 
+echo "Phase 7 of 7 ended at: $(date '+%d/%m/%Y %H:%M:%S')"
 echo

@@ -32,7 +32,6 @@ def main():
 
     while (time.time() - first_start_time) < time_to_run*MINUTE:
 #        subprocess.call(["iperf3", "-c", "10.0.0.50", "-p", "5202", "-u", "-R", "-t", "2", "-J"])
-         
         if (interval_counter % 10 == 0) and (interval_counter>0) and (counter == 0):
             counter = 1
 	# check for up or down
@@ -47,12 +46,14 @@ def main():
         elif ((interval_counter + 1) % 10 == 0) and (interval_counter>0) and (counter == 1):
             counter = 0
         if (time.time()- first_start_time  > interval_counter*30):
+            print ("interval time:"+str(time.time()-first_start_time))         
             logging.basicConfig(
-                    level=logging.INFO,
+                    level=logging.CRITICAL,
                     format='%(threadName)10s %(name)18s: %(message)s',
                     stream=sys.stderr,
                 )
             loop = asyncio.get_event_loop()
+            #loop.run_until_complete(post(rate))
             loop.run_until_complete(post(rate))
             interval_counter += 1
 
@@ -128,8 +129,8 @@ def post_skata(n):
     try:
     	r = requests.post(post_url, files=files, data=json)
     except ConnectionError as e:
-	print e
-	os.system("./fix_connection.sh")
+        print (e)
+        os.system("./fix_connection.sh")
     log.info('done')
 
 if __name__ == "__main__":
