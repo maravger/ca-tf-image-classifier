@@ -2,6 +2,7 @@
 *.pyc 
 *.jpg
 
+*.swp
 bin/
 lib/
 kombu/
