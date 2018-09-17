@@ -24,7 +24,6 @@ def main():
     while (time.time() - first_start_time) < 600*MINUTE:
 #        subprocess.call(["iperf3", "-c", "10.0.0.50", "-p", "5202", "-u", "-R", "-t", "2", "-J"])
         
-        print (time.time()-first_start_time)        
         if (time.time()- first_start_time  > interval_counter*30):
             logging.basicConfig(
                     level=logging.CRITICAL,
