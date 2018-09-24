@@ -19,18 +19,41 @@ MINUTE = 60
 def main():
     rate = int(sys.argv[1])
     print (rate)
+    upper_bound = int(sys.argv[2])
+    time_to_run = int(sys.argv[3])
     first_start_time = time.time()
     interval_counter = 0
-    while (time.time() - first_start_time) < 600*MINUTE:
+    counter = 0 
+# by default variance = 0 means every 10 interval rate = rate + 2, variance = 1 accorcingly rate = rate -2
+    if (rate==upper_bound): 
+        variance = 1
+    else:
+        variance = 0
+
+    while (time.time() - first_start_time) < time_to_run*MINUTE:
 #        subprocess.call(["iperf3", "-c", "10.0.0.50", "-p", "5202", "-u", "-R", "-t", "2", "-J"])
-        
+        if (interval_counter % 10 == 0) and (interval_counter>0) and (counter == 0):
+            counter = 1
+	# check for up or down
+            if (variance==0):
+                rate += 2
+            else:
+                rate -= 2
+            if (rate <= 2):
+                variance = 0
+            if (rate >= upper_bound):
+                variance = 1
+        elif ((interval_counter + 1) % 10 == 0) and (interval_counter>0) and (counter == 1):
+            counter = 0
         if (time.time()- first_start_time  > interval_counter*30):
+            print ("interval time:"+str(time.time()-first_start_time))         
             logging.basicConfig(
                     level=logging.CRITICAL,
                     format='%(threadName)10s %(name)18s: %(message)s',
                     stream=sys.stderr,
                 )
             loop = asyncio.get_event_loop()
+            #loop.run_until_complete(post(rate))
             loop.run_until_complete(post(rate))
             interval_counter += 1
 
@@ -48,7 +71,7 @@ async def post(rate):
         log.info('starting')
         log.info('creating executor tasks')
         skata = poisson.rvs(rate)
-        while (skata<1) or (skata>42) or (skata<rate-5) or (skata>rate+5):
+        while (skata<1) or (skata<rate-1) or (skata>rate+1):
             skata = poisson.rvs(rate)
         print ("poisson number")
         print (skata)
@@ -75,12 +98,12 @@ async def post(rate):
                 )
                 for i in range(skata)
             ]
-            #log.info('waiting for executor tasks')
+            log.info('waiting for executor tasks')
             completed, pending = await asyncio.wait(futures)
             results = [t.result() for t in completed]
-            #log.info('results: {!r}'.format(results))
+            log.info('results: {!r}'.format(results))
 
-            #log.info('exiting')
+            log.info('exiting')
 
             #for response in await asyncio.gather(*futures):
             #    pass
@@ -94,22 +117,21 @@ def post_skata(n):
 
     n = str(random.randint(1, 3))
     img = "n" + n + ".jpg"
-    p = str(random.randint(0,1))
+    #p = str(random.randint(0,1))
     #post_url = "http://10.0.0.50:8000/ca_tf/imageUpload/" + img
-    post_url = "http://192.168.0.1:8004/central_controller/offload/app/" + p
+    post_url = "http://192.168.0.1:8004/central_controller/offload/app/" +str(0)
     size = os.path.getsize("../images/" + img)
     pts = time.time()  # * 1000
     json = {"size": size, "start_time": pts}
     files = {"file": open("../images/" + img, "rb")}
-    #log.info('running')
-
+    log.info('running')
+    
     try:
     	r = requests.post(post_url, files=files, data=json)
     except ConnectionError as e:
         print (e)
         os.system("./fix_connection.sh")
-
-    #log.info('done')
+    log.info('done')
 
 if __name__ == "__main__":
     main()

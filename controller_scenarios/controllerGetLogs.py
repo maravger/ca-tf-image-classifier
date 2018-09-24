@@ -7,6 +7,8 @@ import sys
 import requests
 import os
 import requests
+import csv
+import json
 MINUTE = 60
 
 
@@ -17,20 +19,46 @@ def main():
 
     first_start_time = time.time()
     # for the first X minutes send "not fire-containing" images
-    while (time.time() - first_start_time) < 5*MINUTE:
-        #n = str(random.randint(1,3))
-        #img = "n"+n+".jpg"
-        post_url = "http://10.0.0.50:8000/ca_tf/getLogs/"
+    interval_counter = 1 
+    while (time.time() - first_start_time)<600*MINUTE:
+        f = open("log.txt" , "a") 
+#        subprocess.call(["docker", "stats", "--no-stream", "--format", "{{ .MemPerc }}  {{ .CPUPerc }}"] , stdout = f) # , ">", "./log.txt"])
 
-        r=requests.get(post_url)#, files=files, data=json)
-        print(r.text)
-        #subprocess.call(["curl", "-s", "-X", \
-        #        "POST", "-F", "file=@images/"+img+";type=image/jpeg", "http://193.190.127.181:8000/ca_tf/imageUpload/"+img])
-        #time.sleep(random.randint(0,6))
-        time.sleep(30)
+        if (time.time() - first_start_time) > 30* interval_counter :
+            interval_counter += 1
+            '''allNums = []
+            total = 0
+            mem=0 
+            cpu=0
+            with open('log.txt','rb') as f:
+                #for line in f:
+                data = f.readlines()
+                for line in data:
+                    allNums=[]
+                    allNums += line.strip().split("%")
+                    mem += float (allNums[0])
+                    cpu += float (allNums[1])
+                    total +=1
+            r = open ('log.txt','w')
+            mem_avg = round(mem/total,3)
+            cpu_avg = round(cpu/total,3)
+            '''
+            post_url = "http://147.102.13.123:8000/ca_tf/getLogs/"
+            r=requests.get(post_url)#, files=files, data=json)
+            print(r.text)
+            skata = json.loads(r.text)
+            filename = "./statsclient"
+            with open(filename, 'a') as myfile:
+                wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
+                # If opened for the first time, insert header row
+                if os.path.getsize(filename) == 0:
+                    wr.writerow(["requests_submitted", "requests_finished", "requests_rejected","average_response_time", "average_transmission_time", "average_computation_time","mem_percentage","cpu_percentage"])
+                wr.writerow([skata.get("requests_submitted"),skata.get("requests_finished"),skata.get("requests_rejected"),skata.get("average_response_time"),skata.get("average_transmission_time"),skata.get("average_computation_time")])#,mem_avg,cpu_avg])
+
+            #time.sleep(30)
         
     
 
 if __name__ == "__main__":
-    time.sleep(30)
+    #time.sleep(30)
     main()

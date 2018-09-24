@@ -1,0 +1,17 @@
+*.txt
+*.pyc 
+*.jpg
+
+*.swp
+bin/
+lib/
+kombu/
+local/
+share/
+include/
+
+csvs/
+
+api/.tasks.py.swp
+pip-selfcheck.json
+db.sqlite3*

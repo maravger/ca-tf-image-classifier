@@ -10,3 +10,5 @@ class Tasks_Interval(models.Model):
     finished = models.IntegerField(default=0)
     rejected = models.IntegerField(default=0)
     total_time = models.FloatField(default=0)
+    transmission_time = models.FloatField(default=0)
+    computation_time = models.FloatField(default=0)

@@ -14,6 +14,6 @@ python controllerGetLogs.py &
 for i in $( eval echo {1..$var1} )
 do
     echo "Requests ($i) begin"
-    python3 clientlocal_for_testing.py $var2 &
+    python3.5 clientlocal_for_testing.py $var2 &
 done
-while true; do sleep 10000; done
+while true; do sleep 1000000; done
